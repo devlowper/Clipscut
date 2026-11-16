@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clipscut — Studio, Wizard, Clips, MCP & Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #ffffff;
+      --foreground: #191c1f;
+      --surface-1: #ffffff;
+      --surface-2: #000000B3;
+      --surface-3: #191c1f;
+      --accent-1: #00a87e;
+      --accent-2: #2a3ffb;
+      --muted-1: #00a87e;
+      --muted-2: #505a63;
+      --radius: 9999px;
+      --color-ink: #191c1f;
+      --color-accent: #2a3ffb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      display: flex;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Inter Tight', sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: none;
+      outline: none;
+    }
+
+    /* SIDEBAR */
+    aside {
+      width: 230px;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      background: #ffffff;
+      border-right: 1px solid #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 50;
+    }
+
+    .brand {
+      height: 64px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: #191C1F;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2A3FFB;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    nav {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 12px;
+      color: #505A63;
+      font-size: 13.5px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: #F4F4F4;
+      color: #191C1F;
+      font-weight: 600;
+    }
+
+    .nav-item-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .badge-pill {
+      background: #2A3FFB;
+      color: #ffffff;
+      border-radius: 9999px;
+      padding: 2px 7px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .section-label {
+      padding: 14px 12px 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #8D969E;
+    }
+
+    .user-footer {
+      padding: 14px;
+      border-top: 1px solid #F4F4F4;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #191C1F;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* MAIN */
+    main {
+      margin-left: 230px;
+      flex: 1;
+      min-width: 0;
+      padding: 32px 48px 80px;
+    }
+
+    .view-container {
+      display: none;
+      max-width: 1240px;
+      margin: 0 auto;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .view-container.active {
+      display: flex;
+    }
+
+    /* CARD FAN DECK FOR STUDIO */
+    .deck-container {
+      position: relative;
+      width: 480px;
+      height: 160px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fan-card {
+      position: absolute;
+      width: 105px;
+      height: 150px;
+      border-radius: 18px;
+      overflow: hidden;
+      background: #16181A;
+      border: 2px solid #ffffff;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .fan-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .fan-card-1 { left: 0px; transform: rotate(-16deg) translateY(12px); z-index: 1; opacity: 0.75; }
+    .fan-card-2 { left: 80px; transform: rotate(-8deg) translateY(4px); z-index: 2; opacity: 0.9; }
+    .fan-card-3 { position: relative; width: 116px; height: 165px; border-radius: 20px; border: 3px solid #2A3FFB; box-shadow: 0 16px 36px rgba(42, 63, 251, 0.25); z-index: 4; }
+    .fan-card-4 { right: 80px; transform: rotate(8deg) translateY(4px); z-index: 2; opacity: 0.9; }
+    .fan-card-5 { right: 0px; transform: rotate(16deg) translateY(12px); z-index: 1; opacity: 0.75; }
+
+    .prompt-box {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #e2e2e7;
+      border-radius: 24px;
+      padding: 18px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .warning-box {
+      width: 100%;
+      max-width: 760px;
+      margin: 12px auto 0;
+      background: #FFF5F5;
+      border: 1px solid #FFE0E0;
+      border-radius: 20px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .grid-6 {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 14px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .template-card {
+      border-radius: 20px;
+      overflow: hidden;
+      aspect-ratio: 9/15;
+      background: #16181A;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .template-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(42, 63, 251, 0.2);
+    }
+
+    .template-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .template-card .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
+      color: #fff;
+    }
+
+    /* PILLS */
+    .pills-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .pill {
+      border-radius: 9999px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #F4F4F4;
+      color: #505A63;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+
+    .pill.active {
+      background: #191C1F;
+      color: #FFFFFF;
+    }
+
+    .btn-blue {
+      background: #2A3FFB;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 10px 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-blue:hover {
+      background: #2031db;
+    }
+
+    .btn-dark {
+      background: #191C1F;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 9999px;
+      padding: 8px 16px;
+      font-size: 12px;
+      transition: all 0.15s ease;
+    }
+
+    .btn-dark:hover {
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside>
+    <div>
+      <div class="brand">
+        <div class="brand-icon">✂</div>
+        <span>Clipscut</span>
+      </div>
+
+      <nav>
+        <div class="nav-item" onclick="switchTab('clip')">
+          <div class="nav-item-left">
+            <span>✂</span>
+            <span>Clip</span>
+          </div>
+        </div>
+
+        <div class="nav-item" onclick="switchTab('explore')">
+          <div class="nav-item-left">
+            <span>🧭</span>
+            <span>Explore</span>
+          </div>
+        </div>
+
+        <div class="nav-item" onclick="switchTab('wizard')">
+          <div class="nav-item-left">
+            <span>🪄</span>
+            <span>Wizard</span>
+          </div>
+          <span class="badge-pill">Agent</span>
+        </div>
+
+        <div class="nav-item active" onclick="switchTab('studio')">
+          <div class="nav-item-left">
+            <span>📹</span>
+            <span>Studio</span>
+          </div>
+        </div>
+
+        <div class="nav-item" onclick="switchTab('claude')">
+          <div class="nav-item-left">
+            <span>🤖</span>
+            <span>Use in Claude</span>
+          </div>
+        </div>
+
+        <div class="section-label">Library</div>
+
+        <div class="nav-item" onclick="switchTab('prompt-library')">
+          <div class="nav-item-left">
+            <span>📄</span>
+            <span>Prompt library</span>
+          </div>
+        </div>
+
+        <div class="nav-item" onclick="switchTab('caption-remover')">
+          <div class="nav-item-left">
+            <span>✂</span>
+            <span>Caption remover</span>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="user-footer">
+      <div class="avatar">A</div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-weight: 600; font-size: 13px; color: #191C1F;">afrinakthar80</div>
+        <div style="font-size: 11px; font-weight: 600; color: #00A87E;">● 0 credits</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <!-- VIEW: STUDIO -->
+    <div id="view-studio" class="view-container active">
+      <div style="text-align: center; padding-top: 10px;">
+        <div class="deck-container">
+          <div class="fan-card fan-card-1"><img src="/images/image-3.jpg" alt="Security cam"></div>
+          <div class="fan-card fan-card-2"><img src="/images/image-20.jpg" alt="Press test"></div>
+          <div class="fan-card fan-card-3"><img src="/images/image-2.jpg" alt="Porch cam"></div>
+          <div class="fan-card fan-card-4"><img src="/images/image-23.jpg" alt="Toybox 3D"></div>
+          <div class="fan-card fan-card-5"><img src="/images/image-24.jpg" alt="Courtroom"></div>
+        </div>
+
+        <h1 style="color: #191C1F; font-size: 42px; font-weight: 500; margin: 24px 0 20px;">
+          Make a short that already works
+        </h1>
+
+        <div class="prompt-box">
+          <div style="display: flex; gap: 14px; align-items: flex-start; text-align: left;">
+            <div style="width: 75px; height: 85px; border-radius: 14px; overflow: hidden; position: relative; flex-shrink: 0;">
+              <img src="/images/image-2.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <div style="position: absolute; bottom: 0; inset-x: 0; background: rgba(0,0,0,0.8); color: #fff; font-size: 9px; text-align: center; padding: 2px;">
+                Porch cam
+              </div>
+            </div>
+            <textarea style="flex: 1; border: none; resize: none; font-size: 14px; color: #191C1F; outline: none;" rows="2">A delivery driver sets down a parcel and a goose chases them back down the path</textarea>
+            <span style="font-size: 18px; color: #8D969E; cursor: pointer;">✨</span>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f4f4f4; pt: 10px; margin-top: 8px; padding-top: 12px;">
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="pill" style="padding: 4px 10px;">+</span>
+              <span class="pill active" style="padding: 4px 12px; font-size: 11px;">Clipscut Shorts</span>
+              <span class="pill" style="padding: 4px 10px; font-size: 11px;">480p</span>
+              <span class="pill" style="padding: 4px 10px; font-size: 11px;">⏱ 8s</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+              <span style="background: #FFF1F2; color: #E11D48; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px;">⚡ 8</span>
+              <button class="btn-blue" style="width: 32px; height: 32px; padding: 0; justify-content: center;">↑</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="warning-box">
+          <div style="display: flex; gap: 10px; align-items: center; text-align: left;">
+            <span style="color: #E11D48; font-size: 18px;">⚠️</span>
+            <div>
+              <div style="font-weight: 600; font-size: 12px; color: #191C1F;">Choose a plan to make videos</div>
+              <div style="font-size: 11px; color: #505A63;">This video needs 8, you have 0 left.</div>
+            </div>
+          </div>
+          <button class="btn-dark">See plans</button>
+        </div>
+      </div>
+
+      <!-- TEMPLATES -->
+      <div>
+        <h2 style="margin-bottom: 14px;">Templates</h2>
+        <div class="pills-row" style="margin-bottom: 16px;">
+          <span class="pill active">All</span>
+          <span class="pill">Found-footage story</span>
+          <span class="pill">Porch cam</span>
+          <span class="pill">Security cam</span>
+          <span class="pill">Chest cam</span>
+          <span class="pill">Phone video</span>
+          <span class="pill">Anime moment</span>
+          <span class="pill">Press test</span>
+          <span class="pill">Wild nature</span>
+          <span class="pill">+12 more</span>
+        </div>
+
+        <div class="grid-6">
+          <div class="template-card">
+            <img src="/images/image-1.jpg" alt="1">
+            <div class="overlay">
+              <span style="font-size: 10px; opacity: 0.8;">Found-footage</span>
+              <span style="font-weight: 600; font-size: 12px;">The pizza dog</span>
+            </div>
+          </div>
+          <div class="template-card">
+            <img src="/images/image-2.jpg" alt="2">
+            <div class="overlay">
+              <span style="font-size: 10px; opacity: 0.8;">Porch cam</span>
+              <span style="font-weight: 600; font-size: 12px;">Goose vs driver</span>
+            </div>
+          </div>
+          <div class="template-card">
+            <img src="/images/image-3.jpg" alt="3">
+            <div class="overlay">
+              <span style="font-size: 10px; opacity: 0.8;">Security cam</span>
+              <span style="font-weight: 600; font-size: 12px;">Raccoon raids fridge</span>
+            </div>
+          </div>
+          <div class="template-card">
+            <img src="/images/image-4.jpg" alt="4">
+            <div class="overlay">
+              <span style="font-size: 10px; opacity: 0.8;">Chest cam</span>
+              <span style="font-weight: 600; font-size: 12px;">Goat on ridge</span>
+            </div>
+          </div>
+          <div class="template-card">
+            <img src="/images/image-10.jpg" alt="5">
+            <div class="overlay">
+              <span style="font-size: 10px; opacity: 0.8;">Phone video</span>
+              <span style="font-weight: 600; font-size: 12px;">Seagull heist</span>
+            </div>
+          </div>
+          <div class="template-card">
+            <img src="/images/image-11.jpg" alt="6">
+            <div class="overlay">
+              <span style="font-size: 10px; opacity: 0.8;">Anime moment</span>
+              <span style="font-weight: 600; font-size: 12px;">Storm courier</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: WIZARD -->
+    <div id="view-wizard" class="view-container">
+      <div style="text-align: center; padding-top: 10px;">
+        <div style="display: inline-flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+          <div style="width: 36px; height: 36px; border-radius: 10px; background: #FFE600; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; color: #191C1F;">C</div>
+          <h1 style="color: #191C1F; font-size: 40px; font-weight: 500;">Make something today</h1>
+        </div>
+
+        <div style="max-width: 680px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e2e7; border-radius: 24px; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+          <span style="color: #191C1F; font-size: 13.5px;">Choose a plan to clip and edit with the Wizard.</span>
+          <button class="btn-dark" style="padding: 8px 18px;">See plans</button>
+        </div>
+      </div>
+
+      <div class="pills-row" style="justify-content: center; margin: 6px 0 16px;">
+        <span class="pill" style="border: 1px solid #e2e2e7; background: #fff; color: #191C1F;">✂ Clip a video</span>
+        <span class="pill" style="border: 1px solid #e2e2e7; background: #fff; color: #191C1F;">✨ Make a video</span>
+        <span class="pill" style="border: 1px solid #e2e2e7; background: #fff; color: #191C1F;">🖼 Make images</span>
+        <span class="pill" style="border: 1px solid #e2e2e7; background: #fff; color: #191C1F;">📖 Coloring book</span>
+        <span class="pill" style="border: 1px solid #e2e2e7; background: #fff; color: #191C1F;">✂ Remove captions</span>
+      </div>
+
+      <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 12px;">Video ideas</h2>
+      <div class="grid-3">
+        <!-- Card 1 -->
+        <div style="background: #fff; border: 1px solid #e2e2e7; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #000; padding: 4px; border-radius: 16px; overflow: hidden;">
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-1.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">HE</span>
+            </div>
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-2.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">THIS</span>
+            </div>
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-3.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">NO</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0 4px;">
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; color: #191C1F;">Podcast best moments</div>
+              <div style="font-size: 11.5px; color: #505A63; margin-top: 2px;">The strongest moments of an episode,...</div>
+            </div>
+            <button class="btn-blue" style="padding: 6px 14px; font-size: 11.5px;">Use prompt</button>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div style="background: #fff; border: 1px solid #e2e2e7; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #000; padding: 4px; border-radius: 16px; overflow: hidden;">
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-4.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">NO</span>
+            </div>
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-10.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">WHAT</span>
+            </div>
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-11.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">I'M</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0 4px;">
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; color: #191C1F;">Twitch rage moments</div>
+              <div style="font-size: 11.5px; color: #505A63; margin-top: 2px;">Every time chat gets a reaction out of ...</div>
+            </div>
+            <button class="btn-blue" style="padding: 6px 14px; font-size: 11.5px;">Use prompt</button>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div style="background: #fff; border: 1px solid #e2e2e7; border-radius: 22px; padding: 12px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: #000; padding: 4px; border-radius: 16px; overflow: hidden;">
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-20.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">THE</span>
+            </div>
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-21.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">LET'S</span>
+            </div>
+            <div style="position: relative; aspect-ratio: 9/16; border-radius: 10px; overflow: hidden; background: #16181A;">
+              <img src="/images/image-22.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+              <span style="position: absolute; bottom: 8px; inset-x: 0; text-align: center; font-weight: 900; font-size: 12px; color: #FFE600; text-shadow: 0 2px 4px rgba(0,0,0,0.9); letter-spacing: 1px;">WE</span>
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; padding: 0 4px;">
+            <div>
+              <div style="font-weight: 600; font-size: 13.5px; color: #191C1F;">Kick stream highlights</div>
+              <div style="font-size: 11.5px; color: #505A63; margin-top: 2px;">The big moments out of a long stream</div>
+            </div>
+            <button class="btn-blue" style="padding: 6px 14px; font-size: 11.5px;">Use prompt</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: CAPTION REMOVER -->
+    <div id="view-caption-remover" class="view-container">
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button class="btn-blue">+ Remove captions</button>
+        <span style="font-weight: 600; font-size: 14px;">Caption Remover <span class="badge-pill" style="background: #EEF2FF; color: #2A3FFB;">Beta</span></span>
+      </div>
+
+      <div style="text-align: center; padding: 40px 0;">
+        <h1 style="color: #191C1F; font-size: 40px; margin-bottom: 24px;">Remove captions from a video</h1>
+        <div style="max-width: 680px; margin: 0 auto; border: 2px dashed #d4d4d8; border-radius: 28px; padding: 48px; background: #fff; text-align: center;">
+          <div style="font-size: 32px; margin-bottom: 10px;">🎬</div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 6px;">Drop a video, or browse</div>
+          <div style="font-size: 13px; color: #505A63; margin-bottom: 16px;">We remove the burned-in captions and give you a clean cut.</div>
+          <div class="pills-row" style="justify-content: center; margin-bottom: 20px;">
+            <span class="pill" style="font-size: 11px;">MP4, MOV or WebM</span>
+            <span class="pill" style="font-size: 11px;">Up to 60 seconds</span>
+            <span class="pill" style="font-size: 11px;">Up to 30 MB</span>
+          </div>
+          <button class="btn-dark" style="padding: 10px 24px;">Choose video</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW: PROMPT LIBRARY -->
+    <div id="view-prompt-library" class="view-container">
+      <div>
+        <h1 style="color: #191C1F; font-size: 56px; margin-bottom: 10px;">Prompt library</h1>
+        <p style="color: #505A63; max-width: 800px; font-size: 14px;">Videos made in Studio, each with the exact idea behind it. Pick one to make your own version.</p>
+      </div>
+      <div class="pills-row">
+        <span class="pill active">All</span>
+        <span class="pill">Footage</span>
+        <span class="pill">Animated</span>
+        <span class="pill">Kids</span>
+        <span class="pill">Nature</span>
+        <span class="pill">Gameplay</span>
+        <span class="pill">Ads</span>
+        <span class="pill">Story</span>
+      </div>
+      <div class="grid-3">
+        <div style="background: #F4F4F4; border-radius: 20px; padding: 14px; display: flex; gap: 14px;">
+          <div style="width: 110px; aspect-ratio: 9/16; border-radius: 14px; overflow: hidden; background: #16181A; flex-shrink: 0;">
+            <img src="/images/image-1.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: #2A3FFB; font-weight: 600; font-size: 11px;">Found-footage story · 30 s</div>
+              <div style="font-weight: 600; font-size: 15px; margin: 4px 0 6px;">The pizza dog</div>
+              <div style="font-size: 12px; color: #505A63; line-height: 1.4;">"Doorbell camera at dusk: a golden retriever delivers a pizza to neighbours..."</div>
+            </div>
+            <button class="btn-dark" style="align-self: flex-start; padding: 6px 14px;">Make this</button>
+          </div>
+        </div>
+        <div style="background: #F4F4F4; border-radius: 20px; padding: 14px; display: flex; gap: 14px;">
+          <div style="width: 110px; aspect-ratio: 9/16; border-radius: 14px; overflow: hidden; background: #16181A; flex-shrink: 0;">
+            <img src="/images/image-2.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: #2A3FFB; font-weight: 600; font-size: 11px;">Porch cam · 8 s</div>
+              <div style="font-weight: 600; font-size: 15px; margin: 4px 0 6px;">Goose vs driver</div>
+              <div style="font-size: 12px; color: #505A63; line-height: 1.4;">A delivery driver sets down a parcel and a goose chases them back down the path.</div>
+            </div>
+            <button class="btn-dark" style="align-self: flex-start; padding: 6px 14px;">Make this</button>
+          </div>
+        </div>
+        <div style="background: #F4F4F4; border-radius: 20px; padding: 14px; display: flex; gap: 14px;">
+          <div style="width: 110px; aspect-ratio: 9/16; border-radius: 14px; overflow: hidden; background: #16181A; flex-shrink: 0;">
+            <img src="/images/image-3.jpg" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+          <div style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="color: #2A3FFB; font-weight: 600; font-size: 11px;">Security cam · 8 s</div>
+              <div style="font-weight: 600; font-size: 15px; margin: 4px 0 6px;">Raccoon raids fridge</div>
+              <div style="font-size: 12px; color: #505A63; line-height: 1.4;">A raccoon wanders into an empty office kitchen at night and opens the fridge.</div>
+            </div>
+            <button class="btn-dark" style="align-self: flex-start; padding: 6px 14px;">Make this</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function switchTab(viewName) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      const targetView = document.getElementById('view-' + viewName);
+      if (targetView) targetView.classList.add('active');
+
+      const activeNav = Array.from(document.querySelectorAll('.nav-item')).find(item => 
+        item.textContent.toLowerCase().includes(viewName.replace('-', ' '))
+      );
+      if (activeNav) activeNav.classList.add('active');
+
+      window.location.hash = viewName;
+    }
+
+    window.addEventListener('load', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash) switchTab(hash);
+    });
+  </script>
+</body>
+</html>

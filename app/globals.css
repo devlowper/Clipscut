@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #191c1f;
+  --surface-1: #ffffff;
+  --surface-2: #000000B3;
+  --surface-3: #191c1f;
+  --accent-1: #00a87e;
+  --accent-2: #2a3ffb;
+  --muted-1: #00a87e;
+  --muted-2: #505a63;
+  --radius: 9999px;
+  --color-ink: #191c1f;
+  --color-accent: #2a3ffb;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1 {
+  font-family: 'Inter Tight', sans-serif;
+  font-size: 88px;
+  font-weight: 500;
+  line-height: 84.48px;
+  letter-spacing: -3.2px;
+  color: #191c1f;
+}
+
+.button-primary {
+  background: #f4f4f4;
+  color: #191c1f;
+  border-radius: 9999px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.button-primary:hover {
+  background: #eaeaea;
+}
+
+.card {
+  background: #f4f4f4;
+  color: #191c1f;
+  border-radius: 20px;
+  font-size: 16px;
+}
+
+.badge-pill {
+  background: #2a3ffb;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+a {
+  color: #191c1f;
+  text-decoration: none;
+}
